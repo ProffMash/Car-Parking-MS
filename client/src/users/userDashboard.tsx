@@ -1,6 +1,6 @@
 import { ParkingCircle, LogOut, Car, Clock, Calendar, CreditCard } from 'lucide-react';
 
-const Dashboard = () => {
+const userDashboard = () => {
   const parkingSpots = [
     { id: 1, location: 'Level 1, Spot A1', status: 'Available', price: '$5/hr' },
     { id: 2, location: 'Level 2, Spot B3', status: 'Occupied', price: '$5/hr' },
@@ -157,4 +157,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default userDashboard;
