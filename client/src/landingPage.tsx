@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Car, ParkingCircle, Clock, Shield, ArrowRight, Mail, Phone, MapPin, CreditCard, Check, Star } from 'lucide-react';
-import AuthModal from './AuthModal';
+import AuthModal from './components/Auth';
 
 const LandingPage = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
