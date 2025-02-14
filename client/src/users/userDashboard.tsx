@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ParkingCircle, LogOut, Car, Clock, Search, Filter, HelpCircle, CreditCard, X } from 'lucide-react';
+import { ParkingCircle, LogOut, Car, Clock, Search, HelpCircle, CreditCard, X, Menu } from 'lucide-react';
 
 interface ParkingSpot {
   id: number;
@@ -29,7 +29,7 @@ interface Ticket {
 }
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState<'spots' | 'support'>('spots');
+  const [] = useState<'spots' | 'support'>('spots');
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [selectedSpot, setSelectedSpot] = useState<ParkingSpot | null>(null);
@@ -55,7 +55,7 @@ const Dashboard = () => {
     { id: 6, location: 'Level 1, Spot A7', status: 'Occupied', price: '$12/hr', type: 'VIP', level: 'Level 1' },
   ]);
 
-  const [tickets] = useState<Ticket[]>([
+  const [] = useState<Ticket[]>([
     {
       id: 1,
       subject: 'Payment Issue',
@@ -108,17 +108,53 @@ const Dashboard = () => {
     )
     .filter(spot => filterType === 'All' ? true : spot.type === filterType);
 
+  const renderSpotCard = (spot: ParkingSpot) => (
+    <div key={spot.id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+      <div className="flex justify-between items-start mb-3">
+        <div>
+          <h3 className="font-medium text-gray-900">{spot.location}</h3>
+          <p className="text-sm text-gray-500">{spot.level}</p>
+        </div>
+        <span className="text-lg font-semibold text-gray-900">{spot.price}</span>
+      </div>
+      <div className="flex flex-wrap gap-2 mb-3">
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+          spot.type === 'VIP' 
+            ? 'bg-purple-100 text-purple-800'
+            : spot.type === 'Premium'
+              ? 'bg-yellow-100 text-yellow-800'
+              : 'bg-gray-100 text-gray-800'
+        }`}>
+          {spot.type}
+        </span>
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+          spot.status === 'Available' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+        }`}>
+          {spot.status}
+        </span>
+      </div>
+      {spot.status === 'Available' && (
+        <button
+          onClick={() => handleBookSpot(spot)}
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+        >
+          Book Now
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
-      <nav className="bg-white shadow-sm">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+      <nav className="bg-white shadow-sm sticky top-0 z-40">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-2">
               <ParkingCircle className="h-8 w-8 text-blue-600" />
-              <span className="text-2xl font-bold text-gray-800">ParkEase</span>
+              <span className="text-xl sm:text-2xl font-bold text-gray-800">ParkEase</span>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="hidden sm:flex items-center space-x-4">
               <button
                 onClick={() => setShowTicketModal(true)}
                 className="text-gray-600 hover:text-gray-800 transition-colors flex items-center space-x-2"
@@ -134,35 +170,43 @@ const Dashboard = () => {
                 <span>Exit</span>
               </a>
             </div>
+            <div className="sm:hidden">
+              <button
+                onClick={() => setShowTicketModal(true)}
+                className="p-2 rounded-lg text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+              >
+                <Menu className="h-6 w-6" />
+              </button>
+            </div>
           </div>
         </div>
       </nav>
 
       {/* Dashboard Content */}
-      <div className="container mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Parking Dashboard</h1>
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="flex items-center justify-between mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Parking Dashboard</h1>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl shadow-sm">
+        <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
             <div className="flex items-center space-x-3">
-              <Car className="h-10 w-10 text-blue-600" />
+              <Car className="h-8 w-8 sm:h-10 sm:w-10 text-blue-600" />
               <div>
-                <p className="text-sm text-gray-600">Available Spots</p>
-                <p className="text-2xl font-bold">
+                <p className="text-xs sm:text-sm text-gray-600">Available Spots</p>
+                <p className="text-xl sm:text-2xl font-bold">
                   {parkingSpots.filter(spot => spot.status === 'Available').length}
                 </p>
               </div>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-sm">
+          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
             <div className="flex items-center space-x-3">
-              <Clock className="h-10 w-10 text-green-600" />
+              <Clock className="h-8 w-8 sm:h-10 sm:w-10 text-green-600" />
               <div>
-                <p className="text-sm text-gray-600">Operating Hours</p>
-                <p className="text-2xl font-bold">24/7</p>
+                <p className="text-xs sm:text-sm text-gray-600">Operating Hours</p>
+                <p className="text-xl sm:text-2xl font-bold">24/7</p>
               </div>
             </div>
           </div>
@@ -170,24 +214,24 @@ const Dashboard = () => {
 
         {/* Parking Spots */}
         <div className="bg-white rounded-xl shadow-sm">
-          <div className="p-6 border-b border-gray-100">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-              <h2 className="text-xl font-semibold">Available Parking Spots</h2>
-              <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-                <div className="relative">
+          <div className="p-4 sm:p-6 border-b border-gray-100">
+            <div className="flex flex-col space-y-4">
+              <h2 className="text-lg sm:text-xl font-semibold">Available Parking Spots</h2>
+              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   <input
                     type="text"
                     placeholder="Search spots..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                   />
                 </div>
                 <select
                   value={filterType}
                   onChange={(e) => setFilterType(e.target.value as any)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                  className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                 >
                   <option value="All">All Types</option>
                   <option value="Standard">Standard</option>
@@ -197,7 +241,16 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          <div className="p-6">
+          
+          {/* Mobile Card View */}
+          <div className="block sm:hidden p-4">
+            <div className="grid grid-cols-1 gap-4">
+              {filteredSpots.map(renderSpotCard)}
+            </div>
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden sm:block p-6">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -253,8 +306,8 @@ const Dashboard = () => {
 
       {/* Booking Modal */}
       {showBookingModal && selectedSpot && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-4 sm:p-6 max-w-md w-full">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-semibold">Book Parking Spot</h3>
               <button 
@@ -427,8 +480,8 @@ const Dashboard = () => {
 
       {/* Support Ticket Modal */}
       {showTicketModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-4 sm:p-6 max-w-md w-full">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-semibold">Submit Support Ticket</h3>
               <button 
