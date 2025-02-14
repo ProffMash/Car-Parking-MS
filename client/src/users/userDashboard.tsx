@@ -31,6 +31,7 @@ interface Ticket {
 const Dashboard = () => {
   const [] = useState<'spots' | 'support'>('spots');
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [selectedSpot, setSelectedSpot] = useState<ParkingSpot | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -102,7 +103,7 @@ const Dashboard = () => {
   };
 
   const filteredSpots = parkingSpots
-    .filter(spot => 
+    .filter(spot =>
       spot.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
       spot.type.toLowerCase().includes(searchQuery.toLowerCase())
     )
@@ -118,18 +119,16 @@ const Dashboard = () => {
         <span className="text-lg font-semibold text-gray-900">{spot.price}</span>
       </div>
       <div className="flex flex-wrap gap-2 mb-3">
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-          spot.type === 'VIP' 
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${spot.type === 'VIP'
             ? 'bg-purple-100 text-purple-800'
             : spot.type === 'Premium'
               ? 'bg-yellow-100 text-yellow-800'
               : 'bg-gray-100 text-gray-800'
-        }`}>
+          }`}>
           {spot.type}
         </span>
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-          spot.status === 'Available' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-        }`}>
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${spot.status === 'Available' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          }`}>
           {spot.status}
         </span>
       </div>
@@ -145,6 +144,7 @@ const Dashboard = () => {
   );
 
   return (
+
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
       <nav className="bg-white shadow-sm sticky top-0 z-40">
@@ -154,6 +154,8 @@ const Dashboard = () => {
               <ParkingCircle className="h-8 w-8 text-blue-600" />
               <span className="text-xl sm:text-2xl font-bold text-gray-800">ParkEase</span>
             </div>
+
+            {/* Desktop Navigation */}
             <div className="hidden sm:flex items-center space-x-4">
               <button
                 onClick={() => setShowTicketModal(true)}
@@ -162,7 +164,7 @@ const Dashboard = () => {
                 <HelpCircle className="h-5 w-5" />
                 <span>Support</span>
               </button>
-              <a 
+              <a
                 href="/"
                 className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
               >
@@ -170,16 +172,40 @@ const Dashboard = () => {
                 <span>Exit</span>
               </a>
             </div>
+
+            {/* Mobile Menu Button */}
             <div className="sm:hidden">
               <button
-                onClick={() => setShowTicketModal(true)}
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="p-2 rounded-lg text-gray-600 hover:text-gray-800 hover:bg-gray-100"
               >
-                <Menu className="h-6 w-6" />
+                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
             </div>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="sm:hidden bg-white shadow-md py-4">
+            <div className="container mx-auto px-4">
+              <button
+                onClick={() => setShowTicketModal(true)}
+                className="block w-full text-left text-gray-600 hover:text-gray-800 transition-colors py-2"
+              >
+                <HelpCircle className="inline h-5 w-5 mr-2" />
+                Support
+              </button>
+              <a
+                href="/"
+                className="block w-full text-left text-gray-600 hover:text-gray-800 transition-colors py-2"
+              >
+                <LogOut className="inline h-5 w-5 mr-2" />
+                Exit
+              </a>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Dashboard Content */}
@@ -241,7 +267,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Mobile Card View */}
           <div className="block sm:hidden p-4">
             <div className="grid grid-cols-1 gap-4">
@@ -267,20 +293,18 @@ const Dashboard = () => {
                     <tr key={spot.id} className="border-t border-gray-100">
                       <td className="py-4">{spot.location}</td>
                       <td className="py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          spot.type === 'VIP' 
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${spot.type === 'VIP'
                             ? 'bg-purple-100 text-purple-800'
                             : spot.type === 'Premium'
                               ? 'bg-yellow-100 text-yellow-800'
                               : 'bg-gray-100 text-gray-800'
-                        }`}>
+                          }`}>
                           {spot.type}
                         </span>
                       </td>
                       <td className="py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          spot.status === 'Available' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${spot.status === 'Available' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          }`}>
                           {spot.status}
                         </span>
                       </td>
@@ -310,14 +334,14 @@ const Dashboard = () => {
           <div className="bg-white rounded-xl p-4 sm:p-6 max-w-md w-full">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-semibold">Book Parking Spot</h3>
-              <button 
+              <button
                 onClick={() => setShowBookingModal(false)}
                 className="text-gray-400 hover:text-gray-600"
               >
                 <X className="h-6 w-6" />
               </button>
             </div>
-            
+
             {/* Progress Steps */}
             <div className="flex items-center mb-8">
               <div className={`h-2 flex-1 rounded-full ${bookingStep >= 1 ? 'bg-blue-600' : 'bg-gray-200'}`} />
@@ -339,7 +363,7 @@ const Dashboard = () => {
                     <input
                       type="datetime-local"
                       value={bookingForm.startTime}
-                      onChange={(e) => setBookingForm({...bookingForm, startTime: e.target.value})}
+                      onChange={(e) => setBookingForm({ ...bookingForm, startTime: e.target.value })}
                       className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                       required
                     />
@@ -353,7 +377,7 @@ const Dashboard = () => {
                       min="1"
                       max="24"
                       value={bookingForm.duration}
-                      onChange={(e) => setBookingForm({...bookingForm, duration: parseInt(e.target.value)})}
+                      onChange={(e) => setBookingForm({ ...bookingForm, duration: parseInt(e.target.value) })}
                       className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                       required
                     />
@@ -370,7 +394,7 @@ const Dashboard = () => {
                     <input
                       type="tel"
                       value={bookingForm.mobileNumber}
-                      onChange={(e) => setBookingForm({...bookingForm, mobileNumber: e.target.value})}
+                      onChange={(e) => setBookingForm({ ...bookingForm, mobileNumber: e.target.value })}
                       className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                       placeholder="+1 (555) 000-0000"
                       required
@@ -383,7 +407,7 @@ const Dashboard = () => {
                     <input
                       type="text"
                       value={bookingForm.carPlate}
-                      onChange={(e) => setBookingForm({...bookingForm, carPlate: e.target.value})}
+                      onChange={(e) => setBookingForm({ ...bookingForm, carPlate: e.target.value })}
                       className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                       placeholder="ABC123"
                       required
@@ -403,7 +427,7 @@ const Dashboard = () => {
                       <input
                         type="text"
                         value={bookingForm.cardNumber}
-                        onChange={(e) => setBookingForm({...bookingForm, cardNumber: e.target.value})}
+                        onChange={(e) => setBookingForm({ ...bookingForm, cardNumber: e.target.value })}
                         className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                         placeholder="4242 4242 4242 4242"
                         required
@@ -418,7 +442,7 @@ const Dashboard = () => {
                       <input
                         type="text"
                         value={bookingForm.expiryDate}
-                        onChange={(e) => setBookingForm({...bookingForm, expiryDate: e.target.value})}
+                        onChange={(e) => setBookingForm({ ...bookingForm, expiryDate: e.target.value })}
                         className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                         placeholder="MM/YY"
                         required
@@ -431,7 +455,7 @@ const Dashboard = () => {
                       <input
                         type="text"
                         value={bookingForm.cvv}
-                        onChange={(e) => setBookingForm({...bookingForm, cvv: e.target.value})}
+                        onChange={(e) => setBookingForm({ ...bookingForm, cvv: e.target.value })}
                         className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                         placeholder="123"
                         required
@@ -484,7 +508,7 @@ const Dashboard = () => {
           <div className="bg-white rounded-xl p-4 sm:p-6 max-w-md w-full">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-semibold">Submit Support Ticket</h3>
-              <button 
+              <button
                 onClick={() => setShowTicketModal(false)}
                 className="text-gray-400 hover:text-gray-600"
               >
