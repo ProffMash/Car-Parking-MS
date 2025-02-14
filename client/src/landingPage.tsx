@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Car, ParkingCircle, Clock, Shield, ArrowRight, Mail, Phone, MapPin, CreditCard, Check, Star } from 'lucide-react';
+import { Car, ParkingCircle, Clock, Shield, ArrowRight, Mail, Phone, MapPin, CreditCard, Check, Star, X, Menu } from 'lucide-react';
 import AuthModal from './Auth/AuthModal';
 
 interface LandingPageProps {
@@ -8,34 +8,58 @@ interface LandingPageProps {
 
 const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       {/* Navigation */}
       <nav className="fixed w-full bg-white/90 backdrop-blur-sm z-50 shadow-sm">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <ParkingCircle className="h-8 w-8 text-blue-600" />
-              <span className="text-2xl font-bold text-gray-800">ParkEase</span>
-            </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#services" className="text-gray-600 hover:text-blue-600 transition-colors">Services</a>
-              <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Features</a>
-              <a href="#pricing" className="text-gray-600 hover:text-blue-600 transition-colors">Pricing</a>
-              <a href="#contact" className="text-gray-600 hover:text-blue-600 transition-colors">Contact</a>
-              <button 
-                onClick={() => setIsAuthModalOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-medium flex items-center space-x-2 transition-colors"
-              >
-                <span>Login</span>
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <ParkingCircle className="h-8 w-8 text-blue-600" />
+            <span className="text-2xl font-bold text-gray-800">ParkEase</span>
           </div>
+
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center space-x-8">
+            <a href="#services" className="text-gray-600 hover:text-blue-600 transition-colors">Services</a>
+            <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Features</a>
+            <a href="#pricing" className="text-gray-600 hover:text-blue-600 transition-colors">Pricing</a>
+            <a href="#contact" className="text-gray-600 hover:text-blue-600 transition-colors">Contact</a>
+            <button
+              onClick={() => setIsAuthModalOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-medium flex items-center space-x-2 transition-colors"
+            >
+              <span>Login</span>
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-gray-700">
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
       </nav>
 
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="md:hidden fixed top-16 left-0 w-full bg-white shadow-lg py-4">
+          <div className="flex flex-col items-center space-y-4">
+            <a href="#services" className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>Services</a>
+            <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>Features</a>
+            <a href="#pricing" className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>Pricing</a>
+            <a href="#contact" className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>Contact</a>
+            <button
+              onClick={() => { setIsAuthModalOpen(true); setIsMenuOpen(false); }}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-medium flex items-center space-x-2 transition-colors"
+            >
+              <span>Login</span>
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} onLogin={onLogin} />
 
       {/* Hero Section */}
@@ -49,7 +73,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
               Find and reserve parking spots instantly. Save time and eliminate the hassle of searching for parking spaces.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <button 
+              <button
                 onClick={() => setIsAuthModalOpen(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-medium flex items-center justify-center space-x-2 transition-colors"
               >
@@ -175,7 +199,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                   <span>Email support</span>
                 </li>
               </ul>
-              <button 
+              <button
                 onClick={() => setIsAuthModalOpen(true)}
                 className="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800 transition-colors"
               >
@@ -203,7 +227,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                   <span>Mobile app features</span>
                 </li>
               </ul>
-              <button 
+              <button
                 onClick={() => setIsAuthModalOpen(true)}
                 className="w-full bg-white text-blue-600 py-3 rounded-lg hover:bg-gray-50 transition-colors"
               >
@@ -231,7 +255,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                   <span>Custom integration</span>
                 </li>
               </ul>
-              <button 
+              <button
                 onClick={() => setIsAuthModalOpen(true)}
                 className="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800 transition-colors"
               >
