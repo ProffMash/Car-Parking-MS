@@ -1,64 +1,42 @@
-import { useState } from 'react';
-import { Car, ParkingCircle, Clock, Shield, ArrowRight, Mail, Phone, MapPin, CreditCard, Check, Star, Menu, X } from 'lucide-react';
-import AuthModal from './components/Auth';
+import React, { useState } from 'react';
+import { Car, ParkingCircle, Clock, Shield, ArrowRight, Mail, Phone, MapPin, CreditCard, Check, Star } from 'lucide-react';
+import AuthModal from './Auth/AuthModal';
 
-const LandingPage = () => {
+interface LandingPageProps {
+  onLogin: () => void;
+}
+
+const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       {/* Navigation */}
-      {/* Navigation */}
       <nav className="fixed w-full bg-white/90 backdrop-blur-sm z-50 shadow-sm">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <ParkingCircle className="h-8 w-8 text-blue-600" />
-            <span className="text-2xl font-bold text-gray-800">ParkEase</span>
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <ParkingCircle className="h-8 w-8 text-blue-600" />
+              <span className="text-2xl font-bold text-gray-800">ParkEase</span>
+            </div>
+            <div className="hidden md:flex items-center space-x-8">
+              <a href="#services" className="text-gray-600 hover:text-blue-600 transition-colors">Services</a>
+              <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Features</a>
+              <a href="#pricing" className="text-gray-600 hover:text-blue-600 transition-colors">Pricing</a>
+              <a href="#contact" className="text-gray-600 hover:text-blue-600 transition-colors">Contact</a>
+              <button 
+                onClick={() => setIsAuthModalOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-medium flex items-center space-x-2 transition-colors"
+              >
+                <span>Login</span>
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
           </div>
-          
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
-            <a href="#services" className="text-gray-600 hover:text-blue-600 transition-colors">Services</a>
-            <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Features</a>
-            <a href="#pricing" className="text-gray-600 hover:text-blue-600 transition-colors">Pricing</a>
-            <a href="#contact" className="text-gray-600 hover:text-blue-600 transition-colors">Contact</a>
-            <button 
-              onClick={() => setIsAuthModalOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-medium flex items-center space-x-2 transition-colors"
-            >
-              <span>Login</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-gray-700">
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
         </div>
       </nav>
 
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden fixed top-16 left-0 w-full bg-white shadow-lg py-4">
-          <div className="flex flex-col items-center space-y-4">
-            <a href="#services" className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>Services</a>
-            <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>Features</a>
-            <a href="#pricing" className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>Pricing</a>
-            <a href="#contact" className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>Contact</a>
-            <button 
-              onClick={() => { setIsAuthModalOpen(true); setIsMenuOpen(false); }}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-medium flex items-center space-x-2 transition-colors"
-            >
-              <span>Login</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} onLogin={onLogin} />
 
       {/* Hero Section */}
       <div className="pt-24 container mx-auto px-6 py-12 md:py-24">
