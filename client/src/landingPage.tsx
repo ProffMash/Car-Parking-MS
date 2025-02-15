@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Car, ParkingCircle, Clock, Shield, ArrowRight, CreditCard, Check, Star, X, Menu } from 'lucide-react';
 import AuthModal from './Auth/AuthModal';
+import Contacts from './contacts';
 
 interface LandingPageProps {
   onLogin: () => void;
