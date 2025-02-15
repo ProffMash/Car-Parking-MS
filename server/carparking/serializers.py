@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from rest_framework.validators import UniqueValidator
-from .models import ParkingSlot, Booking
+from .models import ParkingSlot, Booking, Contact
 
 User = get_user_model()
 
@@ -40,4 +40,9 @@ class BookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
+        fields = '__all__'  # Includes all fields
+        
+class ContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contact
         fields = '__all__'  # Includes all fields
