@@ -2,9 +2,9 @@ from rest_framework import viewsets, views, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.utils import timezone
-from .models import ParkingSlot, Booking
+from .models import ParkingSlot, Booking, Contact
 from django.contrib.auth import get_user_model
-from .serializers import ParkingSlotSerializer, BookingSerializer, UserRegisterSerializer, UserLoginSerializer
+from .serializers import ParkingSlotSerializer, BookingSerializer, UserRegisterSerializer, UserLoginSerializer, ContactSerializer
 from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
@@ -48,6 +48,7 @@ class ParkingSlotViewSet(viewsets.ModelViewSet):
         available_slots = ParkingSlot.objects.filter(is_available=True)
         serializer = self.get_serializer(available_slots, many=True)
         return Response(serializer.data)
+    
 
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
@@ -76,3 +77,6 @@ class BookingViewSet(viewsets.ModelViewSet):
 
         return response
 
+class ContactViewSet(viewsets.ModelViewSet):
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
