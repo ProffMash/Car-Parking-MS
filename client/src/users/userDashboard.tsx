@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ParkingCircle, LogOut, Car, Clock, HelpCircle, Menu, X } from 'lucide-react';
+import { ParkingCircle, LogOut, HelpCircle, Menu, X } from 'lucide-react';
 import ParkingSlot from '../components/services/parkingSlot';
 import Booking from '../components/services/Booking';
 import Support from '../components/services/support';
@@ -21,13 +21,16 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [selectedSpot, setSelectedSpot] = useState<ParkingSpot | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleBookSpot = (spot: ParkingSpot) => {
     setSelectedSpot(spot);
     setShowBookingModal(true);
   };
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const handleLogout = () => {
+    onLogout(); // Call the logout function from props
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -49,17 +52,16 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                 <HelpCircle className="h-5 w-5" />
                 <span>Support</span>
               </button>
-              <a
-                href="/"
+              <button
                 className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
-                onClick={onLogout}
+                onClick={handleLogout}
               >
                 <LogOut className="h-5 w-5" />
                 <span>Logout</span>
-              </a>
+              </button>
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu */}
             <div className="sm:hidden">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -82,13 +84,13 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                 <HelpCircle className="inline h-5 w-5 mr-2" />
                 Support
               </button>
-              <a
-                href="/"
-                className="block w-full text-left text-gray-600 hover:text-gray-800 transition-colors py-2"
+              <button
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors w-full text-left py-2"
+                onClick={handleLogout}
               >
-                <LogOut className="inline h-5 w-5 mr-2" />
-                Exit
-              </a>
+                <LogOut className="h-5 w-5" />
+                <span>Logout</span>
+              </button>
             </div>
           </div>
         )}
@@ -96,33 +98,9 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
       {/* Dashboard Content */}
       <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        <div className="flex items-center justify-between mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Parking Dashboard</h1>
-        </div>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Parking Dashboard</h1>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
-            <div className="flex items-center space-x-3">
-              <Car className="h-8 w-8 sm:h-10 sm:w-10 text-blue-600" />
-              <div>
-                <p className="text-xs sm:text-sm text-gray-600">Available Spots</p>
-                <p className="text-xl sm:text-2xl font-bold">4</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
-            <div className="flex items-center space-x-3">
-              <Clock className="h-8 w-8 sm:h-10 sm:w-10 text-green-600" />
-              <div>
-                <p className="text-xs sm:text-sm text-gray-600">Operating Hours</p>
-                <p className="text-xl sm:text-2xl font-bold">24/7</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Parking Spots */}
+        {/* Parking Slots */}
         <ParkingSlot onBookSpot={handleBookSpot} />
       </div>
 
