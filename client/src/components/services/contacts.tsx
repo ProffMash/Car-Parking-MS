@@ -1,6 +1,42 @@
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { useState } from "react";
+import { Mail, Phone, MapPin } from "lucide-react";
+import { createContact } from "../../api/contactApi";
 
 const Contacts = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (e: { target: { id: any; value: any; }; }) => {
+    const { id, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess(false);
+
+    try {
+      await createContact(formData);
+      setSuccess(true);
+      setFormData({ name: "", email: "", message: "" });
+    } catch (err) {
+      setError("Failed to send message. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div id="contact" className="py-20 bg-gray-50">
       <div className="container mx-auto px-6">
@@ -40,7 +76,7 @@ const Contacts = () => {
               </div>
             </div>
           </div>
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Name</label>
               <input
@@ -48,6 +84,9 @@ const Contacts = () => {
                 id="name"
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                 placeholder="Your name"
+                value={formData.name}
+                onChange={handleChange}
+                required
               />
             </div>
             <div>
@@ -57,6 +96,9 @@ const Contacts = () => {
                 id="email"
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                 placeholder="your@email.com"
+                value={formData.email}
+                onChange={handleChange}
+                required
               />
             </div>
             <div>
@@ -66,10 +108,19 @@ const Contacts = () => {
                 rows={4}
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                 placeholder="Your message"
+                value={formData.message}
+                onChange={handleChange}
+                required
               ></textarea>
             </div>
-            <button className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
-              Send Message
+            {error && <p className="text-red-500">{error}</p>}
+            {success && <p className="text-green-500">Message sent successfully!</p>}
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              disabled={loading}
+            >
+              {loading ? "Sending..." : "Send Message"}
             </button>
           </form>
         </div>
