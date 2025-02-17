@@ -52,7 +52,6 @@ const Booking: React.FC<BookingProps> = ({ isOpen, onClose, selectedSpot }) => {
 
     setIsSubmitting(true);
 
-    // Prepare data for API call
     const newBooking: BookingType = {
       total_amount: (
         parseFloat(selectedSpot.price.replace("$", "").replace("/hr", "")) *
@@ -79,6 +78,7 @@ const Booking: React.FC<BookingProps> = ({ isOpen, onClose, selectedSpot }) => {
         expiryDate: "",
         cvv: "",
       });
+      window.location.reload();
     } catch (error) {
       console.error("Error creating booking:", error);
       alert("Failed to create booking. Please try again.");
@@ -97,11 +97,13 @@ const Booking: React.FC<BookingProps> = ({ isOpen, onClose, selectedSpot }) => {
           </button>
         </div>
 
-        {/* Progress Steps */}
         <div className="flex items-center mb-8">
-          <div className={`h-2 flex-1 rounded-full ${bookingStep >= 1 ? "bg-blue-600" : "bg-gray-200"}`} />
-          <div className={`h-2 flex-1 rounded-full mx-2 ${bookingStep >= 2 ? "bg-blue-600" : "bg-gray-200"}`} />
-          <div className={`h-2 flex-1 rounded-full ${bookingStep === 3 ? "bg-blue-600" : "bg-gray-200"}`} />
+          {[1, 2, 3].map((step) => (
+            <div
+              key={step}
+              className={`h-2 flex-1 rounded-full ${bookingStep >= step ? "bg-blue-600" : "bg-gray-200"}`}
+            />
+          ))}
         </div>
 
         <p className="text-gray-600 mb-6">{selectedSpot.location} - {selectedSpot.type} - {selectedSpot.price}</p>
@@ -109,83 +111,64 @@ const Booking: React.FC<BookingProps> = ({ isOpen, onClose, selectedSpot }) => {
         <form onSubmit={handleBookingSubmit} className="space-y-4">
           {bookingStep === 1 && (
             <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Start Time</label>
-                <input
-                  type="datetime-local"
-                  value={bookingForm.startTime}
-                  onChange={(e) => setBookingForm({ ...bookingForm, startTime: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Duration (hours)</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="24"
-                  value={bookingForm.duration}
-                  onChange={(e) => setBookingForm({ ...bookingForm, duration: parseInt(e.target.value) })}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                  required
-                />
-              </div>
+              <label className="block text-sm font-medium text-gray-700">Start Time</label>
+              <input
+                type="datetime-local"
+                value={bookingForm.startTime}
+                onChange={(e) => setBookingForm({ ...bookingForm, startTime: e.target.value })}
+                className="w-full px-4 py-2 rounded-lg border"
+                required
+              />
+
+              <label className="block text-sm font-medium text-gray-700">Duration (hours)</label>
+              <input
+                type="number"
+                min="1"
+                max="24"
+                value={bookingForm.duration}
+                onChange={(e) => setBookingForm({ ...bookingForm, duration: parseInt(e.target.value) })}
+                className="w-full px-4 py-2 rounded-lg border"
+                required
+              />
             </>
           )}
 
           {bookingStep === 2 && (
             <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Mobile Number</label>
-                <input
-                  type="tel"
-                  value={bookingForm.mobileNumber}
-                  onChange={(e) => setBookingForm({ ...bookingForm, mobileNumber: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Car License Plate</label>
-                <input
-                  type="text"
-                  value={bookingForm.carPlate}
-                  onChange={(e) => setBookingForm({ ...bookingForm, carPlate: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                  required
-                />
-              </div>
+              <label className="block text-sm font-medium text-gray-700">Mobile Number</label>
+              <input
+                type="tel"
+                value={bookingForm.mobileNumber}
+                onChange={(e) => setBookingForm({ ...bookingForm, mobileNumber: e.target.value })}
+                className="w-full px-4 py-2 rounded-lg border"
+                required
+              />
+
+              <label className="block text-sm font-medium text-gray-700">Car License Plate</label>
+              <input
+                type="text"
+                value={bookingForm.carPlate}
+                onChange={(e) => setBookingForm({ ...bookingForm, carPlate: e.target.value })}
+                className="w-full px-4 py-2 rounded-lg border"
+                required
+              />
             </>
           )}
 
           {bookingStep === 3 && (
-            <>
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                <h4 className="font-medium mb-2">Payment Summary</h4>
-                <div className="flex justify-between text-sm text-gray-600 mb-2">
-                  <span>Duration</span>
-                  <span>{bookingForm.duration} hours</span>
-                </div>
-                <div className="flex justify-between text-sm text-gray-600 mb-2">
-                  <span>Rate</span>
-                  <span>{selectedSpot.price}</span>
-                </div>
-                <div className="flex justify-between font-medium mt-2 pt-2 border-t">
-                  <span>Total</span>
-                  <span>${(parseFloat(selectedSpot.price.replace("$", "").replace("/hr", "")) * bookingForm.duration).toFixed(2)}</span>
-                </div>
-              </div>
-            </>
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-medium">Payment Summary</h4>
+              <p>Total: ${(parseFloat(selectedSpot.price.replace("$", "").replace("/hr", "")) * bookingForm.duration).toFixed(2)}</p>
+            </div>
           )}
 
-          <div className="flex items-center justify-end space-x-4 mt-6">
+          <div className="flex justify-end space-x-4 mt-6">
             {bookingStep > 1 && (
-              <button type="button" onClick={() => setBookingStep(bookingStep - 1)} className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+              <button type="button" onClick={() => setBookingStep(bookingStep - 1)} className="px-6 py-2 border rounded-lg text-gray-700">
                 Back
               </button>
             )}
-            <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" disabled={isSubmitting}>
+            <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg" disabled={isSubmitting}>
               {isSubmitting ? "Processing..." : bookingStep === 3 ? "Confirm Payment" : "Continue"}
             </button>
           </div>

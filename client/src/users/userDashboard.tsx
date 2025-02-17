@@ -13,7 +13,11 @@ interface ParkingSpot {
   level: string;
 }
 
-const Dashboard = () => {
+interface DashboardProps {
+  onLogout: () => void;
+}
+
+const Dashboard = ({ onLogout }: DashboardProps) => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [selectedSpot, setSelectedSpot] = useState<ParkingSpot | null>(null);
@@ -44,6 +48,7 @@ const Dashboard = () => {
               <a 
                 href="/"
                 className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+                onClick={onLogout}
               >
                 <LogOut className="h-5 w-5" />
                 <span>Exit</span>
