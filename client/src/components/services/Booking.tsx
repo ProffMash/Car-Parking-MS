@@ -17,6 +17,9 @@ interface BookingForm {
   duration: number;
   mobileNumber: string;
   carPlate: string;
+  cardNumber: string;
+  expiryDate: string;
+  cvc: string;
 }
 
 interface BookingProps {
@@ -33,6 +36,9 @@ const Booking: React.FC<BookingProps> = ({ isOpen, onClose, selectedSpot }) => {
     duration: 1,
     mobileNumber: "",
     carPlate: "",
+    cardNumber: "",
+    expiryDate: "",
+    cvc: "",
   });
 
   if (!isOpen || !selectedSpot) return null;
@@ -50,7 +56,7 @@ const Booking: React.FC<BookingProps> = ({ isOpen, onClose, selectedSpot }) => {
     }
 
     setIsSubmitting(true);
-    
+
     const newBooking: BookingType = {
       total_amount: totalAmount,
       start_time: new Date(bookingForm.startTime).toISOString(),
@@ -63,11 +69,22 @@ const Booking: React.FC<BookingProps> = ({ isOpen, onClose, selectedSpot }) => {
     try {
       await createBooking(newBooking);
       toast.success("Booking confirmed! A confirmation has been sent to your mobile number.");
-      
+
+      // Reload the page after booking is successful
+      window.location.reload(); // This will refresh the page
+
       setTimeout(() => {
         onClose();
         setBookingStep(1);
-        setBookingForm({ startTime: "", duration: 1, mobileNumber: "", carPlate: "" });
+        setBookingForm({
+          startTime: "",
+          duration: 1,
+          mobileNumber: "",
+          carPlate: "",
+          cardNumber: "",
+          expiryDate: "",
+          cvc: "",
+        });
       }, 1500);
     } catch (error) {
       console.error("Error creating booking:", error);
@@ -79,9 +96,7 @@ const Booking: React.FC<BookingProps> = ({ isOpen, onClose, selectedSpot }) => {
 
   return (
     <>
-      {/* Toaster positioned at the top */}
-      <Toaster richColors position="top-center" />
-
+      <Toaster position="top-center" richColors />
       <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-xl p-6 max-w-md w-full">
           <div className="flex items-center justify-between mb-6">
@@ -151,18 +166,62 @@ const Booking: React.FC<BookingProps> = ({ isOpen, onClose, selectedSpot }) => {
 
             {bookingStep === 3 && (
               <div className="p-4 bg-gray-50 rounded-lg">
-                <h4 className="font-medium">Payment Summary</h4>
-                <p>Total: ${totalAmount}</p>
+                <h4 className="font-medium">Payment Details</h4>
+                <p className="mb-3">Total: ${totalAmount}</p>
+
+                <label className="block text-sm font-medium text-gray-700">Card Number</label>
+                <input
+                  type="text"
+                  maxLength={16}
+                  placeholder="1234 5678 9012 3456"
+                  value={bookingForm.cardNumber}
+                  onChange={(e) => setBookingForm({ ...bookingForm, cardNumber: e.target.value })}
+                  className="w-full px-4 py-2 rounded-lg border"
+                  required
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Expiry Date</label>
+                    <input
+                      type="text"
+                      value={bookingForm.expiryDate}
+                      onChange={(e) => setBookingForm({ ...bookingForm, expiryDate: e.target.value })}
+                      className="w-full px-4 py-2 rounded-lg border"
+                      placeholder="MM/YY"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">CVC</label>
+                    <input
+                      type="password"
+                      maxLength={3}
+                      placeholder="123"
+                      value={bookingForm.cvc}
+                      onChange={(e) => setBookingForm({ ...bookingForm, cvc: e.target.value })}
+                      className="w-full px-4 py-2 rounded-lg border"
+                      required
+                    />
+                  </div>
+                </div>
               </div>
             )}
 
             <div className="flex justify-end space-x-4 mt-6">
               {bookingStep > 1 && (
-                <button type="button" onClick={() => setBookingStep(bookingStep - 1)} className="px-6 py-2 border rounded-lg text-gray-700">
+                <button
+                  type="button"
+                  onClick={() => setBookingStep(bookingStep - 1)}
+                  className="px-6 py-2 border rounded-lg text-gray-700"
+                >
                   Back
                 </button>
               )}
-              <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg" disabled={isSubmitting}>
+              <button
+                type="submit"
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg"
+                disabled={isSubmitting}
+              >
                 {isSubmitting ? "Processing..." : bookingStep === 3 ? "Confirm Booking" : "Continue"}
               </button>
             </div>
