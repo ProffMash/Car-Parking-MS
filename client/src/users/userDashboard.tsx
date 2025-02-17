@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ParkingCircle, LogOut, Car, Clock, HelpCircle, Menu } from 'lucide-react';
+import { ParkingCircle, LogOut, Car, Clock, HelpCircle, Menu, X } from 'lucide-react';
 import ParkingSlot from '../components/services/parkingSlot';
 import Booking from '../components/services/Booking';
 import Support from '../components/services/support';
@@ -27,6 +27,8 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     setShowBookingModal(true);
   };
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
@@ -37,6 +39,8 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
               <ParkingCircle className="h-8 w-8 text-blue-600" />
               <span className="text-xl sm:text-2xl font-bold text-gray-800">ParkEase</span>
             </div>
+
+            {/* Desktop Navigation */}
             <div className="hidden sm:flex items-center space-x-4">
               <button
                 onClick={() => setShowTicketModal(true)}
@@ -45,25 +49,49 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                 <HelpCircle className="h-5 w-5" />
                 <span>Support</span>
               </button>
-              <a 
+              <a
                 href="/"
                 className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
                 onClick={onLogout}
               >
                 <LogOut className="h-5 w-5" />
-                <span>Exit</span>
+                <span>Logout</span>
               </a>
             </div>
+
+            {/* Mobile Menu Button */}
             <div className="sm:hidden">
               <button
-                onClick={() => setShowTicketModal(true)}
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="p-2 rounded-lg text-gray-600 hover:text-gray-800 hover:bg-gray-100"
               >
-                <Menu className="h-6 w-6" />
+                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
             </div>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="sm:hidden bg-white shadow-md py-4">
+            <div className="container mx-auto px-4">
+              <button
+                onClick={() => setShowTicketModal(true)}
+                className="block w-full text-left text-gray-600 hover:text-gray-800 transition-colors py-2"
+              >
+                <HelpCircle className="inline h-5 w-5 mr-2" />
+                Support
+              </button>
+              <a
+                href="/"
+                className="block w-full text-left text-gray-600 hover:text-gray-800 transition-colors py-2"
+              >
+                <LogOut className="inline h-5 w-5 mr-2" />
+                Exit
+              </a>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Dashboard Content */}
