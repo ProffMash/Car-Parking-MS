@@ -5,7 +5,7 @@ from .views import ParkingSlotViewSet, BookingViewSet, RegisterView, LoginView, 
 router = DefaultRouter()
 router.register(r'parking-slots', ParkingSlotViewSet)
 router.register(r'bookings', BookingViewSet)
-router.register(r'contacts', ContactViewSet)
+router.register(r'support', ContactViewSet)
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
