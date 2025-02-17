@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { createSupportMessage } from '../../api/supportApi';
+import { Toaster, toast } from 'sonner';
 
 interface SupportProps {
   isOpen: boolean;
@@ -12,25 +13,21 @@ const Support: React.FC<SupportProps> = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
-    setSuccess('');
 
     try {
       await createSupportMessage({ name, email, message });
-      setSuccess('Your support ticket has been submitted successfully!');
+      toast.success('Your support ticket has been submitted successfully!');
       setName('');
       setEmail('');
       setMessage('');
     } catch (err) {
-      setError('Failed to submit the support ticket. Please try again.');
+      toast.error('Failed to submit the support ticket. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -38,19 +35,19 @@ const Support: React.FC<SupportProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      {/* Toaster at the top */}
+      <Toaster position="top-center" richColors/>
+
       <div className="bg-white rounded-xl p-4 sm:p-6 max-w-md w-full">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold">Submit Support Ticket</h3>
-          <button 
+          <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
           >
             <X className="h-6 w-6" />
           </button>
         </div>
-
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-        {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
