@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
+import { register, login } from '../api/authApi';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLogin: () => void;
+  onLogin: (token: string) => void;
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
@@ -13,40 +14,37 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
-    // Simple validation
     if (!email || !password || (!isLogin && !name)) {
       setError('Please fill in all fields');
+      setLoading(false);
       return;
     }
 
-    // Simple email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address');
-      return;
+    try {
+      if (isLogin) {
+        const response = await login(email, password);
+        onLogin(response.token);
+      } else {
+        await register(name, email, password);
+        setIsLogin(true); // Switch to login after successful registration
+      }
+      onClose();
+      setEmail('');
+      setPassword('');
+      setName('');
+    } catch (err: any) {
+      setError(err.message);
     }
-
-    // Simple password validation
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      return;
-    }
-
-    // For demo purposes, we'll accept any valid input
-    onLogin();
-    onClose();
-    
-    // Reset form
-    setEmail('');
-    setPassword('');
-    setName('');
+    setLoading(false);
   };
 
   return (
@@ -66,9 +64,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
         <div className="flex gap-2 mb-6">
           <button
             className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-              isLogin
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              isLogin ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
             onClick={() => setIsLogin(true)}
           >
@@ -76,9 +72,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
           </button>
           <button
             className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-              !isLogin
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              !isLogin ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
             onClick={() => setIsLogin(false)}
           >
@@ -140,49 +134,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
             />
           </div>
 
-          {isLogin && (
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center">
-                <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                <span className="ml-2 text-gray-600">Remember me</span>
-              </label>
-              <a href="#" className="text-blue-600 hover:text-blue-800">
-                Forgot password?
-              </a>
-            </div>
-          )}
-
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            disabled={loading}
           >
-            {isLogin ? 'Sign In' : 'Create Account'}
+            {loading ? 'Processing...' : isLogin ? 'Sign In' : 'Create Account'}
           </button>
         </form>
-
-        <div className="mt-6 text-center text-sm text-gray-600">
-          {isLogin ? (
-            <p>
-              Don't have an account?{' '}
-              <button
-                onClick={() => setIsLogin(false)}
-                className="text-blue-600 hover:text-blue-800 font-medium"
-              >
-                Sign up
-              </button>
-            </p>
-          ) : (
-            <p>
-              Already have an account?{' '}
-              <button
-                onClick={() => setIsLogin(true)}
-                className="text-blue-600 hover:text-blue-800 font-medium"
-              >
-                Sign in
-              </button>
-            </p>
-          )}
-        </div>
       </div>
     </div>
   );
