@@ -4,7 +4,7 @@ import AuthModal from './Auth/AuthModal';
 import Contacts from './components/services/contacts';
 
 interface LandingPageProps {
-  onLogin: () => void;
+  onLogin: (() => void) | ((admin: boolean) => void);
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
