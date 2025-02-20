@@ -82,6 +82,11 @@ class BookingViewSet(viewsets.ModelViewSet):
         slot.save()
 
         return response
+    
+    @action(detail=False, methods=['get'], url_path='count')  # Custom action for user count
+    def get_bookings(self, request):
+        count = Booking.objects.count()  # Count total users
+        return Response({"total_bookings": count})
 
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()

@@ -90,3 +90,7 @@ def get_users_count():
 def get_parking_slots():
     count = ParkingSlot.objects.all()
     return JsonResponse({'count': count})
+
+def get_bookings():
+    count = Booking.objects.all()
+    return JsonResponse({'count': count})
