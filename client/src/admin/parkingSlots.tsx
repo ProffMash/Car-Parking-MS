@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getParkingSlots, createParkingSlot, updateParkingSlot, deleteParkingSlot, ParkingSlot } from "../api/parkingApi";
-import { Loader, CheckCircle, XCircle, Plus, Trash, Edit, ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader, CheckCircle, XCircle, Plus, Trash, Edit } from "lucide-react";
 
 const AdminParking: React.FC = () => {
   const [parkingSlots, setParkingSlots] = useState<ParkingSlot[]>([]);
@@ -138,14 +138,20 @@ const AdminParking: React.FC = () => {
       )}
 
       {/* Pagination Controls */}
-      <div className="mt-4 flex justify-center space-x-4">
-        <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="px-3 py-1 bg-gray-300 rounded">
-          <ChevronLeft />
-        </button>
-        <button disabled={indexOfLastSlot >= parkingSlots.length} onClick={() => setCurrentPage(currentPage + 1)} className="px-3 py-1 bg-gray-300 rounded">
-          <ChevronRight />
-        </button>
+      <div className="mt-4 flex justify-center space-x-2 items-center">
+
+        {/* Page Numbers */}
+        {Array.from({ length: Math.ceil(parkingSlots.length / slotsPerPage) }, (_, index) => (
+          <button
+            key={index + 1}
+            onClick={() => setCurrentPage(index + 1)}
+            className={`px-3 py-1 rounded ${currentPage === index + 1 ? "bg-blue-600 text-white" : "bg-gray-300"}`}
+          >
+            {index + 1}
+          </button>
+        ))}
       </div>
+
 
       {/* Modal for Editing Slot */}
       {isEditing && (
