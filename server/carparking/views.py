@@ -2,9 +2,9 @@ from rest_framework import viewsets, views, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.utils import timezone
-from .models import ParkingSlot, Booking, Contact
+from .models import CustomUser, ParkingSlot, Booking, Contact
 from django.contrib.auth import get_user_model
-from .serializers import ParkingSlotSerializer, BookingSerializer, UserRegisterSerializer, UserLoginSerializer, ContactSerializer
+from .serializers import ParkingSlotSerializer, BookingSerializer, UserRegisterSerializer, UserLoginSerializer, ContactSerializer, UserSerializer, CountSerializer
 from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
@@ -80,3 +80,15 @@ class BookingViewSet(viewsets.ModelViewSet):
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
+
+
+
+#custom user viewset
+class CustomUserViewSet(viewsets.ModelViewSet):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+
+    @action(detail=False, methods=['get'], url_path='count')  # Custom action for user count
+    def get_user_count(self, request):
+        count = CustomUser.objects.count()  # Count total users
+        return Response({"total_users": count}) 

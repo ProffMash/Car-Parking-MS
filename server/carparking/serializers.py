@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from rest_framework.validators import UniqueValidator
-from .models import ParkingSlot, Booking, Contact
+from .models import ParkingSlot, Booking, Contact, CustomUser
 
 User = get_user_model()
 
@@ -46,3 +46,13 @@ class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
         fields = '__all__'  # Includes all fields
+
+#custim user serializer
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser  # Change this from User to CustomUser
+        fields = ['id', 'full_name', 'email']
+
+
+class CountSerializer(serializers.Serializer):
+    count = serializers.IntegerField()

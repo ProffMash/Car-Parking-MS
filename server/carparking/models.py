@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.http import JsonResponse
 
 # Custom User Manager
 class CustomUserManager(BaseUserManager):
@@ -81,3 +82,7 @@ class Booking(models.Model):
     def __str__(self):
         return f"Booking for {self.license_plate} at {self.parking_slot.spot_name}"
 
+
+def get_users_count():
+    count=CustomUser.objects.all().count()
+    return JsonResponse({'count': count})
