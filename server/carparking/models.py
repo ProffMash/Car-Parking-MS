@@ -86,3 +86,7 @@ class Booking(models.Model):
 def get_users_count():
     count=CustomUser.objects.all().count()
     return JsonResponse({'count': count})
+
+def get_parking_slots():
+    count = ParkingSlot.objects.all()
+    return JsonResponse({'count': count})

@@ -49,6 +49,12 @@ class ParkingSlotViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(available_slots, many=True)
         return Response(serializer.data)
     
+    @action(detail=False, methods=['get'], url_path='count')  # Custom action for user count
+    def get_parking_slots(self, request):
+        count = ParkingSlot.objects.count()  # Count total users
+        return Response({"total_parkingslots": count})
+    
+    
 
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
