@@ -1,94 +1,132 @@
-// users.tsx
-import React from 'react';
-import { Search, Edit, Trash2, Plus } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { Search, Edit, Trash2, Plus, X } from "lucide-react";
+import { fetchUsers, deleteUser, updateUser, createUser } from "../api/userApi";
 
 const AdminUsers: React.FC = () => {
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [userType, setUserType] = React.useState('all');
+  const [users, setUsers] = useState<{ id: string; full_name: string; email: string }[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<{ id: string; full_name: string; email: string } | null>(null);
+  const [newUser, setNewUser] = useState({ full_name: "", email: "", password: "" });
 
-  const users = [
-    { id: 1, name: 'John Doe', email: 'john@example.com', type: 'customer', status: 'active' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', type: 'staff', status: 'active' },
-    { id: 3, name: 'Mike Johnson', email: 'mike@example.com', type: 'customer', status: 'inactive' },
-  ];
+  useEffect(() => {
+    const getUsers = async () => {
+      try {
+        const data = await fetchUsers();
+        setUsers(data);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    };
+    getUsers();
+  }, []);
 
-  const filteredUsers = users.filter(user =>
-    (user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase())) &&
-    (userType === 'all' || user.type === userType)
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteUser(id);
+      setUsers(users.filter((user) => user.id !== id));
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
+
+  // Handle opening the edit modal
+  const handleEditClick = (user: { id: string; full_name: string; email: string }) => {
+    setSelectedUser(user);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (selectedUser) {
+      setSelectedUser({ ...selectedUser, [e.target.name]: e.target.value });
+    }
+  };
+
+  const handleEditSubmit = async () => {
+    if (selectedUser) {
+      try {
+        await updateUser(selectedUser.id, selectedUser);
+        setUsers(users.map((user) => (user.id === selectedUser.id ? selectedUser : user)));
+        setIsEditModalOpen(false);
+        setSelectedUser(null);
+      } catch (error) {
+        console.error("Error updating user:", error);
+      }
+    }
+  };
+
+  // Handle opening the create user modal
+  const handleCreateUserClick = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCreateUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewUser({ ...newUser, [e.target.name]: e.target.value });
+  };
+
+  const handleCreateUserSubmit = async () => {
+    try {
+      const createdUser = await createUser(newUser);
+      setUsers([...users, createdUser]);
+      setIsCreateModalOpen(false);
+      setNewUser({ full_name: "", email: "", password: "" });
+    } catch (error) {
+      console.error("Error creating user:", error);
+    }
+  };
+
+  const filteredUsers = users.filter(
+    (user) =>
+      user.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div className="bg-white rounded-xl shadow-sm">
-      <div className="p-6 border-b border-gray-100">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <input
-              type="text"
-              placeholder="Search users..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <select
-              value={userType}
-              onChange={(e) => setUserType(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-            >
-              <option value="all">All Users</option>
-              <option value="customer">Customers</option>
-              <option value="staff">Staff</option>
-            </select>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-              <Plus className="h-5 w-5" />
-              <span>Add User</span>
-            </button>
-          </div>
+      <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+          <input
+            type="text"
+            placeholder="Search users..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+          />
         </div>
+        <button
+          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          onClick={handleCreateUserClick}
+        >
+          <Plus className="h-5 w-5" />
+          <span>Add User</span>
+        </button>
       </div>
+
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="text-left text-sm text-gray-600 border-b border-gray-100">
-              <th className="px-6 py-4">Name</th>
+              <th className="px-6 py-4">ID</th>
+              <th className="px-6 py-4">Full Name</th>
               <th className="px-6 py-4">Email</th>
-              <th className="px-6 py-4">Type</th>
-              <th className="px-6 py-4">Status</th>
               <th className="px-6 py-4">Actions</th>
             </tr>
           </thead>
+
           <tbody>
-            {filteredUsers.map(user => (
+            {filteredUsers.map((user) => (
               <tr key={user.id} className="border-b border-gray-100">
-                <td className="px-6 py-4">{user.name}</td>
+                <td className="px-6 py-4">{user.id}</td>
+                <td className="px-6 py-4">{user.full_name}</td>
                 <td className="px-6 py-4">{user.email}</td>
                 <td className="px-6 py-4">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    user.type === 'staff'
-                      ? 'bg-purple-100 text-purple-800'
-                      : 'bg-blue-100 text-blue-800'
-                  }`}>
-                    {user.type}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    user.status === 'active'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
-                  }`}>
-                    {user.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
                   <div className="flex items-center space-x-3">
-                    <button className="text-gray-600 hover:text-blue-600">
+                    <button className="text-gray-600 hover:text-blue-600" onClick={() => handleEditClick(user)}>
                       <Edit className="h-5 w-5" />
                     </button>
-                    <button className="text-gray-600 hover:text-red-600">
+                    <button className="text-gray-600 hover:text-red-600" onClick={() => handleDelete(user.id)}>
                       <Trash2 className="h-5 w-5" />
                     </button>
                   </div>
@@ -98,6 +136,45 @@ const AdminUsers: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Create User Modal */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <div className="flex justify-between items-center border-b pb-3">
+              <h2 className="text-lg font-semibold">Create User</h2>
+              <button onClick={() => setIsCreateModalOpen(false)}>
+                <X className="h-5 w-5 text-gray-600" />
+              </button>
+            </div>
+            <input type="text" name="full_name" placeholder="Full Name" onChange={handleCreateUserChange} className="w-full mt-3 p-2 border rounded" />
+            <input type="email" name="email" placeholder="Email" onChange={handleCreateUserChange} className="w-full mt-3 p-2 border rounded" />
+            <input type="password" name="password" placeholder="Password" onChange={handleCreateUserChange} className="w-full mt-3 p-2 border rounded" />
+            <button className="w-full mt-4 bg-blue-600 text-white p-2 rounded-lg" onClick={handleCreateUserSubmit}>
+              Create
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Edit User Modal */}
+      {isEditModalOpen && selectedUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <div className="flex justify-between items-center border-b pb-3">
+              <h2 className="text-lg font-semibold">Edit User</h2>
+              <button onClick={() => setIsEditModalOpen(false)}>
+                <X className="h-5 w-5 text-gray-600" />
+              </button>
+            </div>
+            <input type="text" name="full_name" value={selectedUser.full_name} onChange={handleEditChange} className="w-full mt-3 p-2 border rounded" />
+            <input type="email" name="email" value={selectedUser.email} onChange={handleEditChange} className="w-full mt-3 p-2 border rounded" />
+            <button className="w-full mt-4 bg-blue-600 text-white p-2 rounded-lg" onClick={handleEditSubmit}>
+              Save Changes
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

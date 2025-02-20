@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Search, Trash2, Edit } from "lucide-react";
+import { Search, Trash2 } from "lucide-react";
 import { getBookings, deleteBooking } from "../api/bookingApi";
 
 const AdminBookings: React.FC = () => {
@@ -87,9 +87,6 @@ const AdminBookings: React.FC = () => {
                 <td className="px-4 py-2">{booking.total_amount}</td>
                 <td className="px-4 py-2">{booking.start_time}</td>
                 <td className="px-4 py-2 flex gap-2">
-                  <button className="text-blue-500 hover:text-blue-700">
-                    <Edit size={16} />
-                  </button>
                   <button
                     onClick={() => booking.id !== undefined && handleDelete(booking.id)}
                     className="text-red-500 hover:text-red-700"
