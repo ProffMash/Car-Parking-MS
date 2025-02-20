@@ -7,7 +7,7 @@ interface ParkingSpot {
   location: string;
   status: 'Available' | 'Occupied';
   price: string;
-  type: 'Standard' | 'Premium' | 'VIP';
+  type: 'Standard' | 'Premium' | 'Vip';
   level: string;
 }
 
@@ -17,7 +17,7 @@ interface ParkingSlotProps {
 
 const ParkingSlot: React.FC<ParkingSlotProps> = ({ onBookSpot }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterType, setFilterType] = useState<'All' | 'Standard' | 'Premium' | 'VIP'>('All');
+  const [filterType, setFilterType] = useState<'All' | 'Standard' | 'Premium' | 'Vip'>('All');
   const [parkingSpots, setParkingSpots] = useState<ParkingSpot[]>([]);
   const [loading, setLoading] = useState(true);
   const [bookingLoading] = useState<number | null>(null);
@@ -35,7 +35,7 @@ const ParkingSlot: React.FC<ParkingSlotProps> = ({ onBookSpot }) => {
         location: `Level ${slot.level}, Spot ${slot.spot_name}`,
         status: slot.is_available ? 'Available' : 'Occupied',
         price: `$${slot.rate_per_hour}/hr`,
-        type: slot.slot_type.charAt(0).toUpperCase() + slot.slot_type.slice(1) as 'Standard' | 'Premium' | 'VIP',
+        type: slot.slot_type.charAt(0).toUpperCase() + slot.slot_type.slice(1).toLowerCase() as 'Standard' | 'Premium' | 'Vip',
         level: `Level ${slot.level}`,
       }));
       setParkingSpots(mappedSlots);
@@ -51,7 +51,7 @@ const ParkingSlot: React.FC<ParkingSlotProps> = ({ onBookSpot }) => {
       spot.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
       spot.type.toLowerCase().includes(searchQuery.toLowerCase())
     )
-    .filter(spot => filterType === 'All' ? true : spot.type === filterType);
+    .filter(spot => filterType === 'All' || spot.type.toLowerCase() === filterType.toLowerCase());
 
   if (loading) {
     return <p className="text-center text-gray-500">Loading parking slots...</p>;
@@ -101,7 +101,7 @@ const ParkingSlot: React.FC<ParkingSlotProps> = ({ onBookSpot }) => {
                 </div>
                 <div className="flex flex-wrap gap-2 mb-3">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    spot.type === 'VIP' 
+                    spot.type === 'Vip' 
                       ? 'bg-purple-100 text-purple-800'
                       : spot.type === 'Premium'
                         ? 'bg-yellow-100 text-yellow-800'
