@@ -11,6 +11,10 @@ const AdminUsers: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<{ id: string; full_name: string; email: string } | null>(null);
   const [newUser, setNewUser] = useState({ full_name: "", email: "", password: "" });
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 5;
+
   useEffect(() => {
     const getUsers = async () => {
       try {
@@ -69,11 +73,11 @@ const AdminUsers: React.FC = () => {
   const handleCreateUserSubmit = async () => {
     try {
       await register(newUser.full_name, newUser.email, newUser.password);
-      
+
       // Fetch the latest users to update the table
       const updatedUsers = await fetchUsers();
       setUsers(updatedUsers);
-      
+
       setIsCreateModalOpen(false);
       setNewUser({ full_name: "", email: "", password: "" });
     } catch (error) {
@@ -81,11 +85,20 @@ const AdminUsers: React.FC = () => {
     }
   };
 
+  // Pagination calculations
   const filteredUsers = users.filter(
     (user) =>
       user.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+
+  // Change page
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
     <div className="bg-white rounded-xl shadow-sm">
@@ -121,7 +134,7 @@ const AdminUsers: React.FC = () => {
           </thead>
 
           <tbody>
-            {filteredUsers.map((user) => (
+            {currentUsers.map((user) => (
               <tr key={user.id} className="border-b border-gray-100">
                 <td className="px-6 py-4">{user.id}</td>
                 <td className="px-6 py-4">{user.full_name}</td>
@@ -140,6 +153,19 @@ const AdminUsers: React.FC = () => {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-center items-center space-x-2 my-4">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            className={`px-3 py-1 rounded ${currentPage === index + 1 ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"}`}
+            onClick={() => paginate(index + 1)}
+          >
+            {index + 1}
+          </button>
+        ))}
       </div>
 
       {/* Create User Modal */}
