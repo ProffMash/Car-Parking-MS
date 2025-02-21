@@ -7,7 +7,7 @@ interface ParkingSpot {
   location: string;
   status: 'Available' | 'Occupied';
   price: string;
-  type: 'Standard' | 'Premium' | 'Vip';
+  type: 'Standard' | 'Premium' | 'VIP';
   level: string;
 }
 
@@ -35,7 +35,7 @@ const ParkingSlot: React.FC<ParkingSlotProps> = ({ onBookSpot }) => {
         location: `Level ${slot.level}, Spot ${slot.spot_name}`,
         status: slot.is_available ? 'Available' : 'Occupied',
         price: `$${slot.rate_per_hour}/hr`,
-        type: slot.slot_type.charAt(0).toUpperCase() + slot.slot_type.slice(1).toLowerCase() as 'Standard' | 'Premium' | 'Vip',
+        type: slot.slot_type.toUpperCase() as 'Standard' | 'Premium' | 'VIP',
         level: `Level ${slot.level}`,
       }));
       setParkingSpots(mappedSlots);
@@ -101,7 +101,7 @@ const ParkingSlot: React.FC<ParkingSlotProps> = ({ onBookSpot }) => {
                 </div>
                 <div className="flex flex-wrap gap-2 mb-3">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    spot.type === 'Vip' 
+                    spot.type === 'VIP' 
                       ? 'bg-purple-100 text-purple-800'
                       : spot.type === 'Premium'
                         ? 'bg-yellow-100 text-yellow-800'

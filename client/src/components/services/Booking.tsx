@@ -71,7 +71,9 @@ const Booking: React.FC<BookingProps> = ({ isOpen, onClose, selectedSpot }) => {
       toast.success("Booking confirmed! A confirmation has been sent to your mobile number.");
 
       // Reload the page after booking is successful
-      window.location.reload(); // This will refresh the page
+      setTimeout(() => {
+        window.location.reload();
+      }, 5000);
 
       setTimeout(() => {
         onClose();
