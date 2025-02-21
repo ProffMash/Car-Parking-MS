@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Search, Edit, Trash2, Plus, X } from "lucide-react";
-import { fetchUsers, deleteUser, updateUser, createUser } from "../api/userApi";
+import { fetchUsers, deleteUser, updateUser } from "../api/userApi";
+import { register } from "../api/authApi";
 
 const AdminUsers: React.FC = () => {
   const [users, setUsers] = useState<{ id: string; full_name: string; email: string }[]>([]);
@@ -67,8 +68,12 @@ const AdminUsers: React.FC = () => {
 
   const handleCreateUserSubmit = async () => {
     try {
-      const createdUser = await createUser(newUser);
-      setUsers([...users, createdUser]);
+      await register(newUser.full_name, newUser.email, newUser.password);
+      
+      // Fetch the latest users to update the table
+      const updatedUsers = await fetchUsers();
+      setUsers(updatedUsers);
+      
       setIsCreateModalOpen(false);
       setNewUser({ full_name: "", email: "", password: "" });
     } catch (error) {
