@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.http import JsonResponse
+from django.db.models import Sum
 
 # Custom User Manager
 class CustomUserManager(BaseUserManager):
@@ -94,3 +95,11 @@ def get_parking_slots():
 def get_bookings():
     count = Booking.objects.all()
     return JsonResponse({'count': count})
+
+def get_contacts():
+    count = Contact.objects.all()   
+    return JsonResponse({'count': count})
+
+def get_total_revenue(request):
+    total_revenue = Booking.objects.aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+    return JsonResponse({'total_revenue': total_revenue})

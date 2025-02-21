@@ -6,6 +6,7 @@ from .models import CustomUser, ParkingSlot, Booking, Contact
 from django.contrib.auth import get_user_model
 from .serializers import ParkingSlotSerializer, BookingSerializer, UserRegisterSerializer, UserLoginSerializer, ContactSerializer, UserSerializer, CountSerializer
 from django.contrib.auth import authenticate
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
 
@@ -87,10 +88,20 @@ class BookingViewSet(viewsets.ModelViewSet):
     def get_bookings(self, request):
         count = Booking.objects.count()  # Count total users
         return Response({"total_bookings": count})
+    
+    @action(detail=False, methods=['get'], url_path='total_amount')  # Custom action for user count
+    def get_total_amount(self, request):
+        total_amount = Booking.objects.aggregate(total_amount=Sum('total_amount'))  # Count total users
+        return Response(total_amount)
 
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
+    
+    @action(detail=False, methods=['get'], url_path='count')  # Custom action for user count
+    def get_contacts(self, request):
+        count = Contact.objects.count()  # Count total users
+        return Response({"total_contacts": count})
 
 
 
