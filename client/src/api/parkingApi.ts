@@ -109,7 +109,7 @@
 
 import axios from 'axios';
 
-const API_URL = 'http://127.0.0.1:8000/api/parking-slots/';
+const API_URL = 'https://carparking-backend.onrender.com/api/parking-slots/';
 
 export interface ParkingSlot {
   id: number;

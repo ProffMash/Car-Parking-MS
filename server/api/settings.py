@@ -23,14 +23,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$q4gv84*#uz#-v#g2#s8fgjy)sms5ig9@f%#)l9f88t7qchjq@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['carparking-backend.onrender.com', '127.0.0.1', 'localhost']
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Allow frontend to access API
-    "https://carparkingsystem.vercel.app",  # Allow frontend to access API
+   'http://localhost:5173',
+   'https://carparkingsystem.vercel.app',
+   'https://carparking-backend.onrender.com',
 ]
 
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+    'x-csrftoken',
+    'accept',
+]
 
 
 # Application definition

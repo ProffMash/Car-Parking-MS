@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = "http://127.0.0.1:8000/api/users"; // Base API URL
-const REGISTER_URL = "http://127.0.0.1:8000/api/register/"; // User registration endpoint
+const BASE_URL = "https://carparking-backend.onrender.com/api/users"; // Base API URL
+const REGISTER_URL = "https://carparking-backend.onrender.com/api/register/"; // User registration endpoint
 
 // Fetch all users
 export const fetchUsers = async () => {

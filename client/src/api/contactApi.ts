@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://127.0.0.1:8000/api/support";
+const BASE_URL = "https://carparking-backend.onrender.com/api/support";
 
 export interface Contact {
   id?: number;

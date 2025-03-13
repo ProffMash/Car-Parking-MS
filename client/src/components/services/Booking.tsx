@@ -73,7 +73,7 @@ const Booking: React.FC<BookingProps> = ({ isOpen, onClose, selectedSpot }) => {
       // Reload the page after booking is successful
       setTimeout(() => {
         window.location.reload();
-      }, 5000);
+      }, 1000);
 
       setTimeout(() => {
         onClose();
@@ -87,7 +87,7 @@ const Booking: React.FC<BookingProps> = ({ isOpen, onClose, selectedSpot }) => {
           expiryDate: "",
           cvc: "",
         });
-      }, 1500);
+      }, 1000);
     } catch (error) {
       console.error("Error creating booking:", error);
       toast.error("Failed to create booking. Please try again.");
