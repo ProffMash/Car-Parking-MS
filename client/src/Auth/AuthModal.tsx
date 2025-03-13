@@ -52,15 +52,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("isAdmin", isAdmin ? "true" : "false");
         onLogin(isAdmin);
+        onClose(); 
       } else {
         await register(name, email, password);
+        // Toggle to the login form after successful registration
         setIsLogin(true);
+        setError(""); 
       }
 
-      onClose();
-      setEmail("");
-      setPassword("");
-      setName("");
+      if (isLogin || isAdminLogin) {
+        setEmail("");
+        setPassword("");
+        setName("");
+      }
     } catch (err: any) {
       setError(err.message);
     }
