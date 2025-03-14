@@ -123,18 +123,18 @@ const AdminUsers: React.FC = () => {
 
   return (
     <div className="bg-white rounded-xl shadow-sm">
-      <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-        <div className="relative">
+      <div className="p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center">
+        <div className="relative w-full md:w-auto mb-4 md:mb-0">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
           <input
             type="text"
             placeholder="Search users..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+            className="w-full md:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
           />
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col md:flex-row items-center gap-4">
           <button
             className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             onClick={handleCreateUserClick}
@@ -142,7 +142,6 @@ const AdminUsers: React.FC = () => {
             <Plus className="h-5 w-5" />
             <span>Add User</span>
           </button>
-          {/* Download Button */}
           <button
             onClick={handleDownload}
             className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
@@ -201,8 +200,8 @@ const AdminUsers: React.FC = () => {
 
       {/* Create User Modal */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
             <div className="flex justify-between items-center border-b pb-3">
               <h2 className="text-lg font-semibold">Create User</h2>
               <button onClick={() => setIsCreateModalOpen(false)}>
@@ -221,8 +220,8 @@ const AdminUsers: React.FC = () => {
 
       {/* Edit User Modal */}
       {isEditModalOpen && selectedUser && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
             <div className="flex justify-between items-center border-b pb-3">
               <h2 className="text-lg font-semibold">Edit User</h2>
               <button onClick={() => setIsEditModalOpen(false)}>
