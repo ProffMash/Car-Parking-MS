@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getParkingSlots, createParkingSlot, updateParkingSlot, deleteParkingSlot, ParkingSlot } from "../api/parkingApi";
-import { Loader, CheckCircle, XCircle, Plus, Trash, Edit } from "lucide-react";
+import { Loader, CheckCircle, XCircle, Plus, Trash, Edit, Download } from "lucide-react"; 
 
 const AdminParking: React.FC = () => {
   const [parkingSlots, setParkingSlots] = useState<ParkingSlot[]>([]);
@@ -17,7 +17,7 @@ const AdminParking: React.FC = () => {
   // Modal & editing state
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editSlotId, setEditSlotId] = useState<number | null>(null);
-  const [isCreating, setIsCreating] = useState<boolean>(false); // New state for create modal
+  const [isCreating, setIsCreating] = useState<boolean>(false); 
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,6 +72,37 @@ const AdminParking: React.FC = () => {
     }
   };
 
+  // Function to convert parking slots to CSV
+  const convertToCSV = (data: ParkingSlot[]) => {
+    const headers = ["Spot Name", "Level", "Type", "Rate/hr", "Status"];
+    const rows = data.map((slot) => [
+      slot.spot_name,
+      slot.level,
+      slot.slot_type.toUpperCase(),
+      `$${slot.rate_per_hour}`,
+      slot.is_available ? "Available" : "Occupied",
+    ]);
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      headers.join(",") +
+      "\n" +
+      rows.map((row) => row.join(",")).join("\n");
+
+    return encodeURI(csvContent);
+  };
+
+  // Function to trigger CSV download
+  const handleDownload = () => {
+    const csvData = convertToCSV(parkingSlots);
+    const link = document.createElement("a");
+    link.setAttribute("href", csvData);
+    link.setAttribute("download", "parking_slots_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Pagination Logic
   const indexOfLastSlot = currentPage * slotsPerPage;
   const indexOfFirstSlot = indexOfLastSlot - slotsPerPage;
@@ -81,11 +112,19 @@ const AdminParking: React.FC = () => {
     <div className="bg-gray-100 p-6 rounded-lg shadow-md">
       <h2 className="text-3xl font-bold mb-6 text-gray-800">Parking Slot Management</h2>
 
-      {/* Button to open Create Modal */}
-      <div className="mb-4">
+      {/* Buttons for Create and Download */}
+      <div className="mb-4 flex gap-4">
         <button onClick={() => setIsCreating(true)} className="bg-green-600 text-white py-2 px-4 rounded flex items-center space-x-2">
           <Plus className="h-5 w-5" />
           <span>Create Parking Slot</span>
+        </button>
+        {/* Download Button */}
+        <button
+          onClick={handleDownload}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          <Download className="h-5 w-5" />
+          <span>Download Report</span>
         </button>
       </div>
 
@@ -107,7 +146,7 @@ const AdminParking: React.FC = () => {
                   <th className="p-2 text-left">Type</th>
                   <th className="p-2 text-left">Rate/hr</th>
                   <th className="p-2 text-left">Status</th>
-                  {/* <th className="p-2 text-center">Actions</th> */}
+                  <th className="p-2 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -139,7 +178,6 @@ const AdminParking: React.FC = () => {
 
       {/* Pagination Controls */}
       <div className="mt-4 flex justify-center space-x-2 items-center">
-
         {/* Page Numbers */}
         {Array.from({ length: Math.ceil(parkingSlots.length / slotsPerPage) }, (_, index) => (
           <button
@@ -152,12 +190,11 @@ const AdminParking: React.FC = () => {
         ))}
       </div>
 
-
-      {/* Modal for Editing Slot */}
-      {isEditing && (
+      {/* Modals for Editing and Creating Slots */}
+      {(isEditing || isCreating) && (
         <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-lg">
-            <h3 className="text-xl font-semibold mb-4">Edit Parking Slot</h3>
+            <h3 className="text-xl font-semibold mb-4">{isEditing ? "Edit Parking Slot" : "Create Parking Slot"}</h3>
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-4">
                 <input
@@ -201,69 +238,9 @@ const AdminParking: React.FC = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <button onClick={handleSaveSlot} className="bg-blue-600 text-white py-2 px-4 rounded">
-                    Save Changes
+                    {isEditing ? "Save Changes" : "Create Slot"}
                   </button>
-                  <button onClick={() => setIsEditing(false)} className="bg-gray-400 text-white py-2 px-4 rounded">
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal for Creating Parking Slot */}
-      {isCreating && (
-        <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-lg">
-            <h3 className="text-xl font-semibold mb-4">Create Parking Slot</h3>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 gap-4">
-                <input
-                  type="text"
-                  placeholder="Spot Name"
-                  className="border p-2 rounded"
-                  value={newSlot.spot_name}
-                  onChange={(e) => setNewSlot({ ...newSlot, spot_name: e.target.value })}
-                />
-                <input
-                  type="text"
-                  placeholder="Level"
-                  className="border p-2 rounded"
-                  value={newSlot.level}
-                  onChange={(e) => setNewSlot({ ...newSlot, level: e.target.value })}
-                />
-                <select
-                  className="border p-2 rounded"
-                  value={newSlot.slot_type}
-                  onChange={(e) => setNewSlot({ ...newSlot, slot_type: e.target.value as "standard" | "premium" | "vip" })}
-                >
-                  <option value="standard">Standard</option>
-                  <option value="premium">Premium</option>
-                  <option value="vip">VIP</option>
-                </select>
-                <input
-                  type="text"
-                  placeholder="Rate per hour"
-                  className="border p-2 rounded"
-                  value={newSlot.rate_per_hour}
-                  onChange={(e) => setNewSlot({ ...newSlot, rate_per_hour: e.target.value })}
-                />
-                <div className="flex items-center">
-                  <label className="mr-2">Availability</label>
-                  <input
-                    type="checkbox"
-                    checked={newSlot.is_available}
-                    onChange={(e) => setNewSlot({ ...newSlot, is_available: e.target.checked })}
-                    className="toggle toggle-primary"
-                  />
-                </div>
-                <div className="flex justify-between items-center">
-                  <button onClick={handleSaveSlot} className="bg-blue-600 text-white py-2 px-4 rounded">
-                    Create Slot
-                  </button>
-                  <button onClick={() => setIsCreating(false)} className="bg-gray-400 text-white py-2 px-4 rounded">
+                  <button onClick={() => { setIsEditing(false); setIsCreating(false); }} className="bg-gray-400 text-white py-2 px-4 rounded">
                     Cancel
                   </button>
                 </div>
