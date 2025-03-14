@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Search, Edit, Trash2, Plus, X } from "lucide-react";
+import { Search, Edit, Trash2, Plus, X, Download } from "lucide-react"; 
 import { fetchUsers, deleteUser, updateUser } from "../api/userApi";
 import { register } from "../api/authApi";
 
@@ -61,7 +61,6 @@ const AdminUsers: React.FC = () => {
     }
   };
 
-  // Handle opening the create user modal
   const handleCreateUserClick = () => {
     setIsCreateModalOpen(true);
   };
@@ -74,7 +73,6 @@ const AdminUsers: React.FC = () => {
     try {
       await register(newUser.full_name, newUser.email, newUser.password);
 
-      // Fetch the latest users to update the table
       const updatedUsers = await fetchUsers();
       setUsers(updatedUsers);
 
@@ -85,7 +83,31 @@ const AdminUsers: React.FC = () => {
     }
   };
 
-  // Pagination calculations
+  // Function to convert users to CSV
+  const convertToCSV = (data: { id: string; full_name: string; email: string }[]) => {
+    const headers = ["ID", "Full Name", "Email"];
+    const rows = data.map((user) => [user.id, user.full_name, user.email]);
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      headers.join(",") +
+      "\n" +
+      rows.map((row) => row.join(",")).join("\n");
+
+    return encodeURI(csvContent);
+  };
+
+  // Function to trigger CSV download
+  const handleDownload = () => {
+    const csvData = convertToCSV(users);
+    const link = document.createElement("a");
+    link.setAttribute("href", csvData);
+    link.setAttribute("download", "users_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const filteredUsers = users.filter(
     (user) =>
       user.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -97,7 +119,6 @@ const AdminUsers: React.FC = () => {
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
-  // Change page
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
@@ -113,13 +134,23 @@ const AdminUsers: React.FC = () => {
             className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
           />
         </div>
-        <button
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          onClick={handleCreateUserClick}
-        >
-          <Plus className="h-5 w-5" />
-          <span>Add User</span>
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            onClick={handleCreateUserClick}
+          >
+            <Plus className="h-5 w-5" />
+            <span>Add User</span>
+          </button>
+          {/* Download Button */}
+          <button
+            onClick={handleDownload}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+          >
+            <Download className="h-5 w-5" />
+            <span>Download Report</span>
+          </button>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
