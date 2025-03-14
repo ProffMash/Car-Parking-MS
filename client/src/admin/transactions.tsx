@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Search, Trash2 } from "lucide-react";
+import { Search, Trash2, Download } from "lucide-react"; 
 import { getBookings, deleteBooking } from "../api/bookingApi";
 
 const AdminBookings: React.FC = () => {
@@ -10,7 +10,7 @@ const AdminBookings: React.FC = () => {
     total_amount: number;
     start_time: string;
   }
-  
+
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,6 +42,36 @@ const AdminBookings: React.FC = () => {
     }
   };
 
+  // Function to convert bookings to CSV
+  const convertToCSV = (data: Booking[]) => {
+    const headers = ["License Plate", "Parking Slot", "Total Amount", "Start Time"];
+    const rows = data.map((booking) => [
+      booking.license_plate,
+      booking.parking_slot,
+      booking.total_amount,
+      booking.start_time,
+    ]);
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      headers.join(",") +
+      "\n" +
+      rows.map((row) => row.join(",")).join("\n");
+
+    return encodeURI(csvContent);
+  };
+
+  // Function to trigger CSV download
+  const handleDownload = () => {
+    const csvData = convertToCSV(filteredBookings);
+    const link = document.createElement("a");
+    link.setAttribute("href", csvData);
+    link.setAttribute("download", "bookings_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Pagination Logic
   const indexOfLastBooking = currentPage * bookingsPerPage;
   const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
@@ -67,6 +97,14 @@ const AdminBookings: React.FC = () => {
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
           />
         </div>
+        {/* Download Button */}
+        <button
+          onClick={handleDownload}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          <Download size={16} />
+          Download Report
+        </button>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
